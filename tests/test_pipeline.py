@@ -188,3 +188,49 @@ class FirstRealRunLessons(unittest.TestCase):
         self.assertIn("Google Studio", out)
         self.assertIn("API keys", out)
         self.assertNotIn("\u062c\u0648\u062c\u0644", out)
+
+
+class AntiqueStyle(unittest.TestCase):
+    """The sixth style: Minimal Luxury for ANTIQUE, in Tajawal, with no logo and no English label (added 2026-10-11)."""
+
+    def _project(self, d, elements):
+        import subprocess
+        p = Path(d)
+        subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=black:s=64x64:r=30:d=1',
+                        '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=mono', '-t', '1', '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
+                        '-c:a', 'aac', str(p / 'clean.mp4')], check=True)
+        subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=white:s=200x400',
+                        '-frames:v', '1', str(p / 'photo.jpg')], check=True)
+        save(p / 'plan.json', {'fixture': True, 'keep': [{'start': 0, 'end': 1}]})
+        save(p / 'captions.json', [{'start': 0.1, 'end': 0.9, 'text': 'جملة قصيرة', 'direction': 'rtl'}])
+        save(p / 'elements.json', elements)
+        save(p / 'approval.json', {'by': 'synthetic test', 'sha256': {n: digest(p / n) for n in ('clean.mp4', 'captions.json', 'plan.json')}})
+        return p
+
+    def test_antique_uses_tajawal_and_draws_no_logo_or_english_label(self):
+        from reelkit.core import ROOT
+        self.assertIn('antique', STYLES)
+        el = [{'start': 0.1, 'end': 0.95, 'kind': 'asset', 'title': 'جبس فرنسي', 'path': 'photo.jpg', 'source': 'test photo',
+               'zoom': {'x': 0.1, 'y': 0.2, 'w': 0.5, 'h': 0.25}}]
+        with tempfile.TemporaryDirectory(dir=ROOT / 'projects') as d:
+            out = build(self._project(d, el), 'antique', True)
+            text = (out / 'index.html').read_text(encoding='utf-8')
+            self.assertIn('tajawal-arabic-900-normal.woff2', text)
+            self.assertNotIn('noto-sans-arabic', text)
+            self.assertNotIn('YOUR STORY', text)
+            self.assertNotIn('<img class="logo', text)
+            self.assertIn('class="proof zoom"', text)
+            self.assertIn('class="clip element asset zoomed"', text)
+            self.assertTrue((out / 'assets' / 'tajawal-latin-800-normal.woff2').exists())
+
+    def test_zoom_must_stay_inside_the_image_and_belongs_to_antique(self):
+        from reelkit.core import ROOT
+        base = {'start': 0.1, 'end': 0.95, 'kind': 'asset', 'title': 'x', 'path': 'photo.jpg', 'source': 'test photo'}
+        for zoom in ({'x': 0.7, 'y': 0, 'w': 0.5, 'h': 0.5}, {'x': 0, 'y': 0, 'w': 0, 'h': 0.5},
+                     {'x': 0, 'y': 0, 'w': float('nan'), 'h': 0.5}, {'x': 0, 'y': 0, 'w': 0.5}):
+            with self.subTest(zoom=zoom), tempfile.TemporaryDirectory(dir=ROOT / 'projects') as d:
+                with self.assertRaises(ValueError):
+                    build(self._project(d, [dict(base, zoom=zoom)]), 'antique', True)
+        with tempfile.TemporaryDirectory(dir=ROOT / 'projects') as d:
+            with self.assertRaises(ValueError):
+                build(self._project(d, [dict(base, zoom={'x': 0, 'y': 0, 'w': 0.5, 'h': 0.5})]), 'editorial', True)

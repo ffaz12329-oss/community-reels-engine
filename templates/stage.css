@@ -60,3 +60,26 @@
 .vox .proof{border:2px solid var(--line);background:#fff;padding:8px;transform:rotate(1.2deg);box-shadow:0 10px 22px rgba(60,40,10,.2)}
 .vox.faceless .element{top:520px;max-height:800px;padding:44px 40px}.vox.faceless h2{font-size:70px}.vox.faceless .node{min-height:170px}.vox.faceless .node span{font-size:30px}
 
+
+/* ANTIQUE — Minimal Luxury. Warm cream paper, mocha and coffee-brown, Tajawal ExtraBold/Black. The colours are sampled from the brand's own
+   images. By design the video draws no logo, no masthead and no English label. Photo scenes are full-bleed; "zoomed" shows part of the same image. */
+.antique{--paper:#f6ecdf;--ink:#2c1608;--accent:#8c664a;--panel:#fbf6ee;--line:#d3b6a1;--sand:#e4ceba;--beige:#f2e3d5;--brown:#5b3e26;font-weight:800}
+#reel.antique{background:radial-gradient(ellipse at 50% 38%,#fbf6ee 0,#f6ecdf 62%,#efe0cf 100%)}
+.antique .texture,.antique .masthead,.antique .eyebrow,.antique .source{display:none}
+.antique .caption,.antique.faceless .caption{top:1438px}
+.antique .caption>span{background-color:rgba(251,246,238,.95);color:var(--ink);border:1.5px solid var(--line);border-radius:8px;box-shadow:0 10px 24px #5b3e2640;padding:12px 30px;font-weight:900;background-image:linear-gradient(90deg,var(--sand),var(--sand));background-repeat:no-repeat;background-size:0% 40%;background-position:100% 80%}
+.antique .caption[dir=ltr]>span{background-position:0% 80%}
+.antique .caption bdi{color:var(--accent)}
+.antique .progress{top:1596px;background:#d3b6a1aa}.antique .progress i{background:var(--accent)}
+.antique .element,.antique.faceless .element{left:110px;right:110px;top:560px;max-height:none;padding:60px 48px;text-align:center;background:var(--panel);border:0;border-radius:10px;box-shadow:0 24px 54px #5b3e2638}
+.antique h2,.antique.faceless h2{font-weight:900;font-size:84px;line-height:1.3;margin:0;letter-spacing:0;color:var(--ink)}
+.antique p{font-size:42px;line-height:1.5;background:var(--beige);border-radius:12px;padding:18px 24px;margin:36px 0 0;color:var(--ink)}
+.antique .nodes{direction:rtl;margin-top:36px}.antique .node,.antique.faceless .node{background:var(--beige);border-top:3px solid var(--accent);border-radius:10px;color:var(--ink);font-size:34px;min-height:150px}
+.antique .node small{color:var(--accent);font-size:22px}.antique .node+.node:before{content:'←';left:-19px;color:var(--accent)}.antique .compare .node+.node:before{content:'/'}
+.antique .element.asset{padding:0;background:none;border:0;box-shadow:none}
+.antique .element.asset:not(.zoomed){left:0;right:0;top:0;bottom:0;border-radius:0}
+.antique .element.asset:not(.zoomed) h2{display:none}
+.antique .element.asset:not(.zoomed) .proof{position:absolute;inset:0;width:1080px;height:1920px;max-width:none;object-fit:cover;margin:0}
+.antique .element.zoomed{left:70px;right:70px;top:300px}
+.antique .element.zoomed h2{display:inline-block;background:var(--accent);color:var(--panel);font-size:44px;padding:12px 56px;border-radius:60px;margin:0 0 30px}
+.antique .element.zoomed .proof{display:block;height:auto;max-width:none;margin:0 auto;background-color:var(--panel);background-repeat:no-repeat;border:2px solid var(--line);border-radius:8px;box-shadow:0 24px 50px #5b3e2638}

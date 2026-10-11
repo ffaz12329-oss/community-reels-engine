@@ -7,7 +7,11 @@ for (const event of REEL.events) {
   const sel='#'+event.id, len=event.end-event.start;
   tl.set(sel,{visibility:'visible',opacity:1},event.start);
   if(!REEL.faceless) tl.set('.masthead',{visibility:'visible'},Math.max(0,event.start-.34));   // the masthead belongs to the paper: shown only while the footage is squeezed
-  tl.fromTo(sel,{y:55,scale:.98},{y:0,scale:1,duration:Math.min(.3,len/3),ease:'power3.out'},event.start);
+  // Antique photo scenes are full-bleed: they fade in and drift slowly instead of sliding, so no paper shows at the edge.
+  if (REEL.style==='antique' && document.querySelector(sel+'.asset:not(.zoomed)')) {
+    tl.fromTo(sel,{opacity:0,y:0,scale:1},{opacity:1,y:0,scale:1,duration:Math.min(.4,len/3),ease:'power2.out'},event.start);
+    tl.fromTo(sel+' .proof',{scale:1},{scale:1.05,duration:len,ease:'none'},event.start);
+  } else tl.fromTo(sel,{y:55,scale:.98},{y:0,scale:1,duration:Math.min(.3,len/3),ease:'power3.out'},event.start);
   if(document.querySelector(sel+' .node')) tl.fromTo(sel+' .node',{opacity:0,y:18},{opacity:1,y:0,duration:Math.min(.22,len/4),stagger:Math.min(.11,len/10),ease:'power2.out'},event.start+.08);
   if (REEL.style==='pulse' && document.querySelector(sel+' .graph')) pulseGraph(sel, event);
   tl.set(sel,{visibility:'hidden'},event.end);
@@ -20,7 +24,7 @@ REEL.captions.forEach((cap,i)=>{
   const id='#cap-'+i;
   tl.set(id,{visibility:'visible',opacity:1},cap.start);
   tl.fromTo(id,{y:12},{y:0,duration:Math.min(.14,(cap.end-cap.start)/3),ease:'power2.out'},cap.start);
-  if (REEL.style==='vox') tl.fromTo(id+' > span',{backgroundSize:'0% 46%'},{backgroundSize:'100% 46%',duration:Math.min(.9,(cap.end-cap.start)*.6),ease:'power2.out'},cap.start+.1);
+  if (REEL.style==='vox' || REEL.style==='antique') tl.fromTo(id+' > span',{backgroundSize:'0% 46%'},{backgroundSize:'100% 46%',duration:Math.min(.9,(cap.end-cap.start)*.6),ease:'power2.out'},cap.start+.1);
   tl.set(id,{visibility:'hidden'},cap.end);
 });
 window.__timelines=window.__timelines||{};

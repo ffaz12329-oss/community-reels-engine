@@ -7,6 +7,7 @@ Dependencies are installed with `npm ci`, not copied from the author's private p
 - **HyperFrames 0.8.58** — Apache-2.0. [Official source and license](https://github.com/heygen-com/hyperframes). Installed package license applies.
 - **GSAP 3.15.0** — [GSAP standard no-charge license](https://gsap.com/standard-license/). This is a separate license, not MIT/Apache. Check its terms for your use, especially an animation-building product.
 - **Noto Sans Arabic via @fontsource/noto-sans-arabic 5.3.0** — SIL Open Font License 1.1. See the installed package's `LICENSE` and [Noto sources](https://github.com/notofonts/arabic).
+- **Tajawal via @fontsource/tajawal 5.3.0** — SIL Open Font License 1.1, used by the antique style. See the installed package's `LICENSE` and [fontsource.org/fonts/tajawal](https://fontsource.org/fonts/tajawal).
 - **FFmpeg** and **Chrome** are separately installed system programs, not bundled. Their respective distributions and licenses apply.
 - **Gemini API** is an optional external service governed by [Google's terms](https://ai.google.dev/gemini-api/terms).
 

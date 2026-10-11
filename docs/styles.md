@@ -1,4 +1,4 @@
-# Five starting points, two of them the designer's own
+# Six starting points, two of them the designer's own
 
 | Style | Use it when | Visual vocabulary |
 |---|---|---|
@@ -7,8 +7,9 @@
 | Diagram | Steps and relationships matter | Pale green, teal connections, numbered nodes, open spacing |
 | Pulse | A faceless series: a process shown as a signal moving through its steps | Dark grid canvas, node tiles, an orange signal riding the links, the final step lit blue |
 | VOX | A documentary explanation, the designer's own house style | Warm paper desk, the footage as a taped tilted polaroid that changes side, taped paper cards with red arrows, the highlighter sweeping the words |
+| Antique | A brand video with product photos: Minimal Luxury, Arabic-first | Warm cream paper, mocha and coffee-brown, Tajawal ExtraBold/Black, full-bleed product photos, label close-ups (`zoom`), no logo and no English label |
 
-All five use the same approved speech and measured captions. VOX is the style the designer's own reels are cut in, carried into this engine's language; Pulse is built for faceless reels. Pulse is built for faceless reels: a `flow` element becomes a node graph and the signal travels through it over the element's measured time; use one flow per idea and give each step a real name. Styles change how an idea is presented; they do not rewrite it. `templates/stage.css` holds the three visual systems; `templates/motion.js` is deterministic GSAP motion. `reelkit/composition.py` generates HyperFrames HTML you can inspect and extend.
+All six use the same approved speech and measured captions. VOX is the style the designer's own reels are cut in, carried into this engine's language; Pulse is built for faceless reels. Pulse is built for faceless reels: a `flow` element becomes a node graph and the signal travels through it over the element's measured time; use one flow per idea and give each step a real name. Styles change how an idea is presented; they do not rewrite it. `templates/stage.css` holds the three visual systems; `templates/motion.js` is deterministic GSAP motion. `reelkit/composition.py` generates HyperFrames HTML you can inspect and extend.
 
 ## Design rules
 
