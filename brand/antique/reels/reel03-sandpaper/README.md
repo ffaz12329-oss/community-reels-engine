@@ -1,6 +1,6 @@
 # ANTIQUE reel 03 — coarse vs fine sandpaper (editable source)
 
-Source of the reel `ANTIQUE_Reel03_Sandpaper_Draft01.mp4` (1080×1920, 30 fps, 40.5 s). Media is not stored here (the repository ignores mp4/mov).
+Source of the reel `ANTIQUE_Reel03_Sandpaper_Draft02.mp4` (1080×1920, 30 fps, 40.5 s). Media is not stored here (the repository ignores mp4/mov).
 
 1. Put the two supplied files in `source/`: `clips_gemini.mp4` (720×1280 generated video) and `voice.mov` (the voice recording).
 2. Run `./make.sh` (needs ffmpeg and the repository's `npm ci`).

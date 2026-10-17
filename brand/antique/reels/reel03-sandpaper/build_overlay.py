@@ -19,10 +19,22 @@ def kw_times(c):
         out.append(round(c["start"] + max(0.0, (c["end"] - c["start"] - 0.25)) * len(before) / max(1, len(plain)), 2))
     return out
 
+TRK = json.load(open("scratch_track.json"))
+def kf(name, t0=0.5, t1=7.6, step=0.5):
+    pts = TRK[name]; ks = sorted(float(k) for k in pts); out = []
+    t = t0
+    while t <= t1 + 1e-6:
+        k = min(ks, key=lambda q: abs(q - t)); out.append([round(t, 2), pts[str(k) if str(k) in pts else "%.1f" % k][0], pts[str(k) if str(k) in pts else "%.1f" % k][1]]); t += step
+    return out
+TRACK_JS = json.dumps({"A": kf("A"), "B": kf("B")})
+CUTS = [10.0, 20.1, 32.93]     # the picture cuts (frames 300 / 603 / 988) that the swipes cover
 els = []
 def sec(id_, start, end, track, inner, cls="full"):
     els.append(f'<section id="{id_}" class="clip {cls}" data-start="{start}" data-duration="{end - start:.2f}" data-track-index="{track}">{inner}</section>')
 
+PANEL = '<div class="pan"><div class="pw" data-layout-allow-overflow="true"><div class="bg"></div><div class="e1"></div><div class="e2"></div><div class="e3"></div><div class="e4"></div><div class="mk"></div><div class="dt"></div></div></div>'
+for n, tc in enumerate(CUTS):
+    sec(f"tr{n}", round(tc - 0.50, 2), round(tc + 0.55, 2), 1 + n, PANEL, "full")
 # ---- subtitles: every spoken phrase (Cairo Medium; keywords Cairo ExtraBold in caramel) ----
 caps_js = []
 for i, c in enumerate(CAPS):
@@ -31,13 +43,14 @@ for i, c in enumerate(CAPS):
     caps_js.append({"i": i, "a": c["start"], "b": c["end"], "k": kw_times(c)})
 
 # ---- 1. hook (0.30-3.6): brush stroke + kinetic headline + light sweep + scratch trace ----
-sec("hook", 0.30, 3.65, 2, '''
+sec("hook", 0.30, 7.70, 2, '''
 <div class="sweep"></div>
 <svg class="full" viewBox="0 0 1080 1920"><g id="brk" fill="none" stroke="#fbf6ee" stroke-width="6" stroke-linecap="round" opacity="0.92">
  <path d="M96 928 V892 Q96 884 104 884 H152"/><path d="M954 928 V892 Q954 884 946 884 H898"/>
  <path d="M96 1496 V1532 Q96 1540 104 1540 H152"/><path d="M954 1496 V1532 Q954 1540 946 1540 H898"/></g>
- <path id="trace" d="M236 1016 C330 1066 410 1146 498 1262" fill="none" stroke="#fffaf0" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
- <circle id="tip" cx="498" cy="1262" r="9" fill="#fffaf0" opacity="0"/></svg>
+ <g id="rgA" opacity="0"><circle class="r1" cx="0" cy="0" r="150" fill="none" stroke="#fffaf0" stroke-width="6" stroke-linecap="round"/><circle class="r2" cx="0" cy="0" r="150" fill="none" stroke="#fffaf0" stroke-width="3" opacity="0"/><line class="ld" x1="0" y1="-152" x2="0" y2="-196" stroke="#fffaf0" stroke-width="4" stroke-linecap="round"/></g>
+ <g id="rgB" opacity="0"><circle class="r1" cx="0" cy="0" r="104" fill="none" stroke="#fffaf0" stroke-width="5" stroke-linecap="round"/><circle class="r2" cx="0" cy="0" r="104" fill="none" stroke="#fffaf0" stroke-width="3" opacity="0"/></g></svg>
+<div class="chip sc" id="sctag"><b>خدوش</b></div>
 <div class="hk"><svg class="brush" viewBox="0 0 940 440"><defs><filter id="rough" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.035 0.09" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="26"/></filter></defs>
  <path d="M30 70 Q250 22 470 52 T910 40 L900 380 Q650 430 430 392 T36 404 Z" fill="#e4ceba" filter="url(#rough)"/></svg>
  <div class="l1" data-layout-allow-overlap="true">الصنفرة</div><div class="l2"><span class="w" data-layout-allow-overlap="true">زادت</span> <span class="w st" data-layout-allow-overlap="true">الخدوش؟!</span></div>
@@ -87,10 +100,21 @@ sec("cta", 34.72, DUR, 10, '''
 <div class="cta" id="ctat"><div class="ctab"><span class="cw">أرسليه</span> <span class="cw">لصاحبة</span> <span class="cw">مشروع</span></div></div>
 <svg class="full" viewBox="0 0 1080 1920"><path id="share" d="M770 1010 C 830 960 880 930 905 870" stroke="#fbf6ee" stroke-width="6" stroke-linecap="round" fill="none"/><path id="shead2" d="M876 884 L905 862 L918 896" stroke="#fbf6ee" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>''')
 
+sec("outro", 39.45, DUR, 30, PANEL.replace('class="pan"', 'class="pan" id="opan"'), "full")
+
 css = face + """
 *{box-sizing:border-box}html,body{margin:0;background:transparent}
 #reel{position:relative;width:1080px;height:1920px;overflow:hidden;background:transparent;font-family:ReelLatin,ReelArabic,sans-serif;font-weight:500;color:#2c1608;direction:rtl}
 .full{position:absolute;left:0;top:0;width:1080px;height:1920px}
+.vig{position:absolute;left:0;top:0;width:1080px;height:1920px;background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 56%,rgba(32,16,6,.32) 100%)}
+.chip.sc{left:240px;top:808px;width:300px;padding:4px 18px;height:104px;background:rgba(44,22,8,.92);border-color:#3a2312}.chip.sc b{color:#fbf6ee;font-size:50px}
+.pan{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden}
+.pw{position:absolute;left:0;top:0;width:1180px;height:1920px;transform:translateX(1180px);filter:drop-shadow(-18px 0 26px rgba(44,22,8,.34)) drop-shadow(18px 0 26px rgba(44,22,8,.34))}
+.pw .bg{position:absolute;left:0;top:0;width:1180px;height:1920px;background:repeating-linear-gradient(112deg,rgba(140,102,74,.07) 0 2px,rgba(0,0,0,0) 2px 15px),radial-gradient(circle at 34% 38%,rgba(255,255,255,.62),rgba(255,255,255,0) 58%),linear-gradient(105deg,#f4eadb,#e9d7c0 58%,#dcc5a9)}
+.pw .e1{position:absolute;left:-30px;top:0;width:12px;height:1920px;background:#b88a5e}.pw .e2{position:absolute;left:-70px;top:0;width:34px;height:1920px;background:#e8d4bb}
+.pw .e3{position:absolute;right:-30px;top:0;width:12px;height:1920px;background:#b88a5e}.pw .e4{position:absolute;right:-70px;top:0;width:34px;height:1920px;background:#e8d4bb}
+.pw .mk{position:absolute;left:410px;top:958px;width:360px;height:4px;background:#b88a5e;border-radius:2px;opacity:0;transform:scaleX(0)}
+.pw .dt{position:absolute;left:581px;top:942px;width:36px;height:36px;border-radius:50%;background:#b88a5e;opacity:0;transform:scale(0)}
 .fadeb{position:absolute;left:0;right:0;bottom:0;height:520px;background:linear-gradient(to top,rgba(44,22,8,.38),rgba(44,22,8,0))}
 .chip{position:absolute;display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 26px;background:rgba(251,246,238,.96);border:1.5px solid #d3b6a1;border-radius:24px;box-shadow:0 14px 34px rgba(44,22,8,.30);visibility:hidden;opacity:0}
 .chip b{font-size:60px;line-height:1.15;font-weight:800;color:#2c1608;white-space:nowrap}.chip b span{font-weight:800}
@@ -100,7 +124,7 @@ css = face + """
 .chip.tag{background:rgba(251,246,238,.94)}.chip.tag b{font-size:64px}
 .desc{position:absolute;display:flex;align-items:center;justify-content:center;gap:14px;visibility:hidden;opacity:0}
 .desc span{font-size:48px;font-weight:700;color:#fbf6ee;text-shadow:0 2px 10px rgba(44,22,8,.6)}.desc svg{width:70px;height:32px;filter:drop-shadow(0 2px 6px rgba(44,22,8,.5))}
-#ln1,#dot1,#ln2,#dot2,#ring,#ring2,#ledge,#bdiv,#bnode,#share,#shead2,#dline,#dhead,#sarrow,#shead,#trace,#tip,#brk{opacity:0}
+#ln1,#dot1,#ln2,#dot2,#ring,#ring2,#ledge,#bdiv,#bnode,#share,#shead2,#dline,#dhead,#sarrow,#shead,#brk{opacity:0}
 .sweep{position:absolute;left:-460px;top:0;width:340px;height:1920px;background:linear-gradient(100deg,rgba(255,250,235,0),rgba(255,250,235,.50),rgba(255,250,235,0));transform:skewX(-14deg);opacity:0}
 .hk{position:absolute;left:70px;top:236px;width:940px;height:520px;visibility:hidden}
 .hk .brush{position:absolute;left:0;top:10px;width:940px;height:440px;clip-path:inset(0 0 0 100%)}
@@ -114,13 +138,13 @@ css = face + """
 .ctab{display:inline-block;padding:24px 38px;background:rgba(44,22,8,.92);border-radius:28px;box-shadow:0 18px 44px rgba(44,22,8,.40);font-size:70px;font-weight:800;line-height:1.2;color:#fbf6ee;white-space:nowrap}.cw{display:inline-block;opacity:0}
 .cap{position:absolute;left:70px;width:880px;bottom:420px;display:flex;justify-content:center;align-items:flex-end}
 .cap p{margin:0;padding:12px 30px;background:rgba(44,22,8,.66);border-radius:20px;color:#fbf6ee;font-size:62px;line-height:1.42;font-weight:500;text-align:center;text-wrap:balance;max-width:880px;text-shadow:0 2px 8px rgba(0,0,0,.35);visibility:hidden;opacity:0}
-.cap k{font-weight:800;color:#e6b883;position:relative;display:inline-block;font-style:normal}
-.cap k .u{position:absolute;right:0;left:0;bottom:-1px;height:5px;background:#d4a373;border-radius:3px;transform:scaleX(0);transform-origin:right center}
+.cap k{font-weight:800;color:#fff1de;position:relative;display:inline-block;font-style:normal;isolation:isolate}
+.cap k .u{position:absolute;left:-10px;right:-10px;top:14%;bottom:4%;z-index:-1;background:rgba(176,118,66,.78);border-radius:14px;transform:scaleX(0);transform-origin:right center}
 """
 js = """
 const tl=gsap.timeline({paused:true});
 const CAPS=__CAPS__;
-const E='power3.out', I='power2.in';
+const E='expo.out', I='power2.in';
 // ---------- subtitles ----------
 CAPS.forEach(c=>{
   const p='#cap'+c.i+' p';
@@ -144,13 +168,47 @@ tl.fromTo('.hk .scr',{opacity:0,clipPath:'inset(0 0 0 100%)'},{opacity:1,clipPat
 tl.fromTo('.sweep',{x:0,opacity:1},{x:1700,opacity:1,duration:.85,ease:'power2.inOut'},0.52);
 tl.set('.sweep',{opacity:0},1.4);
 tl.set('#brk',{opacity:1},0.80); tl.fromTo('#brk',{strokeDasharray:300,strokeDashoffset:300},{strokeDashoffset:0,duration:.45,ease:'power2.out'},0.80);
-tl.set('#trace',{opacity:.9},0.90); tl.fromTo('#trace',{strokeDasharray:360,strokeDashoffset:360},{strokeDashoffset:0,duration:.6,ease:'power2.inOut'},0.90);
-tl.fromTo('#tip',{opacity:0,scale:.4,transformOrigin:'498px 1262px'},{opacity:1,scale:1,duration:.2},1.45);
-tl.to(['#trace','#tip','#brk'],{opacity:0,duration:.4},2.6);
+tl.to('#brk',{opacity:0,duration:.4},2.6);
 tl.to('.hk',{opacity:0,y:-26,duration:.34,ease:I},3.22); tl.set('.hk',{visibility:'hidden'},3.6);
-tl.set('#brk',{opacity:1},6.45); tl.fromTo('#brk',{strokeDasharray:300,strokeDashoffset:300,scale:1.04,transformOrigin:'540px 1212px'},{strokeDashoffset:0,scale:1,duration:.45,ease:'power2.out'},6.45);
-tl.set('#trace',{opacity:.9},6.55); tl.fromTo('#trace',{strokeDasharray:360,strokeDashoffset:360},{strokeDashoffset:0,duration:.55,ease:'power2.inOut'},6.55);
-tl.to(['#trace','#brk'],{opacity:0,duration:.35},7.5);
+tl.set('#brk',{opacity:1},6.45); tl.fromTo('#brk',{strokeDasharray:300,strokeDashoffset:300},{strokeDashoffset:0,duration:.45,ease:'power2.out'},6.45);
+tl.to('#brk',{opacity:0,duration:.35},7.5);
+// ---------- scratch rings: follow the scratches (positions tracked from the footage) ----------
+const TRK=__TRK__, CUTS=__CUTS__;
+function follow(g,keys,t0,t1,extra){
+  const P=keys.filter(k=>k[0]>=t0-.6&&k[0]<=t1+.5); const first=P[0];
+  tl.set(g,{x:first[1],y:first[2]},t0-.05);
+  for(let i=1;i<P.length;i++){ tl.to(g,{x:P[i][1],y:P[i][2],duration:P[i][0]-P[i-1][0],ease:'none'},P[i-1][0]); }
+  if(extra){ extra(P); }
+}
+function ringIn(g,t0,t1,r){
+  tl.set(g,{opacity:1},t0);
+  tl.fromTo(g+' .r1',{strokeDasharray:r*6.4,strokeDashoffset:r*6.4,rotation:-90,svgOrigin:'0 0'},{strokeDashoffset:0,duration:.55,ease:'power3.inOut'},t0);
+  tl.fromTo(g+' .r2',{attr:{r:r},opacity:.7},{attr:{r:r*1.55},opacity:0,duration:.9,ease:'power1.out',repeat:2,repeatDelay:.25},t0+.45);
+  tl.to(g,{opacity:0,duration:.35},t1);
+}
+[[0.78,3.2],[6.45,7.5]].forEach(([a,b])=>{
+  ringIn('#rgA',a,b-.35,150); ringIn('#rgB',a+.22,b-.35,104);
+});
+follow('#rgA',TRK.A,0.78,7.5); follow('#rgB',TRK.B,0.78,7.5);
+tl.set('#sctag',{visibility:'visible'},1.0);
+tl.fromTo('#sctag',{opacity:0,y:18,scale:.88,transformOrigin:'50% 100%'},{opacity:1,y:0,scale:1,duration:.4,ease:'back.out(1.6)'},1.0);
+tl.to('#sctag',{opacity:0,y:-8,duration:.3,ease:I},2.9); tl.set('#sctag',{visibility:'hidden'},3.25);
+// ---------- luxury swipes over the three picture cuts + closing swipe ----------
+function swipe(id,tc){
+  const q=s=>'#'+id+' '+s;
+  tl.fromTo(q('.pw'),{x:1180},{x:0,duration:.32,ease:'power3.inOut'},tc-.44);
+  tl.fromTo(q('.mk'),{scaleX:0,opacity:1},{scaleX:1,duration:.26,ease:'expo.out'},tc-.14);
+  tl.fromTo(q('.dt'),{scale:0,opacity:1},{scale:1,duration:.26,ease:'back.out(2.4)',transformOrigin:'50% 50%'},tc-.06);
+  tl.to(q('.mk'),{opacity:0,duration:.14},tc+.10);
+  tl.to(q('.dt'),{opacity:0,scale:.2,duration:.14},tc+.10);
+  tl.to(q('.pw'),{x:-1180,duration:.36,ease:'power3.inOut'},tc+.12);
+}
+CUTS.forEach((tc,n)=>swipe('tr'+n,tc));
+// closing: graphics drift away, the sand panel sweeps in and settles into a clean ivory card
+tl.to(['#tb','#ta','#ctat','#bdiv','#bnode','#share','#shead2'],{opacity:0,y:-18,duration:.34,ease:I,stagger:.04},39.38);
+tl.fromTo('#opan .pw',{x:1180},{x:0,duration:.5,ease:'power3.inOut'},39.58);
+tl.fromTo('#opan .mk',{scaleX:0,opacity:1},{scaleX:1,duration:.5,ease:'expo.out'},40.0);
+tl.fromTo('#opan .dt',{scale:0,opacity:1},{scale:1,duration:.3,ease:'back.out(2.4)',transformOrigin:'50% 50%'},40.12);
 // ---------- 2a. risk ----------
 tl.set('.chip.dark',{visibility:'visible'},11.15);
 tl.fromTo('.chip.dark',{opacity:0,scale:.9,y:16,transformOrigin:'50% 50%'},{opacity:1,scale:1,y:0,duration:.36,ease:E},11.15);
@@ -219,9 +277,9 @@ tl.fromTo('#shead2',{opacity:0,scale:.5,transformOrigin:'905px 862px'},{opacity:
 tl.fromTo('.ctab',{scale:1},{scale:1.035,duration:.5,yoyo:true,repeat:1,ease:'sine.inOut',transformOrigin:'50% 50%'},36.4);
 window.__timelines=window.__timelines||{}; window.__timelines.reel=tl;
 """
-js = js.replace("__CAPS__", json.dumps(caps_js))
+js = js.replace("__CAPS__", json.dumps(caps_js)).replace("__TRK__", TRACK_JS).replace("__CUTS__", json.dumps(CUTS))
 doc = f'''<!doctype html><html lang="ar"><head><meta charset="utf-8"><title>ANTIQUE sandpaper reel overlay</title><script src="assets/gsap.min.js"></script><style>{css}</style></head>
-<body><main id="reel" data-composition-id="reel" data-start="0" data-width="1080" data-height="1920" data-duration="{DUR}" data-fps="30"><div class="fadeb"></div>
+<body><main id="reel" data-composition-id="reel" data-start="0" data-width="1080" data-height="1920" data-duration="{DUR}" data-fps="30"><div class="fadeb"></div><div class="vig"></div>
 {''.join(els)}</main><script>{js}</script></body></html>'''
 (OUT / "index.html").write_text(doc, encoding="utf-8"); (OUT / "hyperframes.json").write_text(json.dumps({"name": "antique-sandpaper-reel-overlay"}))
 print("overlay written:", len(els), "sections,", len(CAPS), "captions")
